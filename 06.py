@@ -1,33 +1,26 @@
-from multiprocessing import Pool
-
-# Puzzle input
+# Puzzle input P1
 Time = [62, 73, 75, 65]
 Distance = [644, 1023, 1240, 1023]
 
 P1 = 1
 for c, t in enumerate(Time):
-    p = 0
-    # most naiive solution
-    # for each race, the min/max of holding the button is 0 and t
-    for x in range(0, t + 1):
-        if (t - x) * x > Distance[c]:
-            p += 1
-    P1 *= p
+    lo = Distance[c] // t
+    hi = t - Distance[c] // t + 1
+    while (t - lo) * lo < Distance[c]:
+        lo += 1
+    while (t - hi) * hi < Distance[c]:
+        hi -= 1
+    P1 *= hi - lo + 1
 print(f"Part 1: {P1}")
 
+# Puzzle input P2
 Time = 62737565
 Distance = 644102312401023
 
-
-def race(x):
-    if (Time - x) * x > Distance:
-        return 1
-    else:
-        return 0
-
-
-# somewhat more intelligent solution
-# with primitive lower and uppre bounds for possible times
-with Pool(processes=4) as pool:
-    P2 = pool.map(race, range(Distance // Time, Time - Distance // Time + 1))
-print(f"Part 2: {sum(P2)}")
+lo = Distance // Time
+hi = Time - Distance // Time + 1
+while (Time - lo) * lo < Distance:
+    lo += 1
+while (Time - hi) * hi < Distance:
+    hi -= 1
+print(f"Part 2: {hi-lo+1}")
